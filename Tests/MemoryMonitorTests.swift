@@ -170,7 +170,7 @@ struct MemoryMonitorTests {
             reads += 1
             return value
         })
-        weak let weakMonitor = monitor
+        weak var weakMonitor = monitor
         monitor?.onUpdate = { [weak monitor] _ in monitor?.stop() }
         monitor?.setMenuOpen(true)
         monitor?.start()
