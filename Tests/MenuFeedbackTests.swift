@@ -54,6 +54,12 @@ struct MenuFeedbackTests {
         }
     }
 
+    private static func frameDiagnostic(_ controller: PowerTransitionController,
+                                        frames: Int, since started: TimeInterval) -> String {
+        let progress = controller.menuClickProgress.map { String(Double($0)) } ?? "restored"
+        return "progress=\(progress), frames=\(frames), elapsed=\(ProcessInfo.processInfo.systemUptime - started)s"
+    }
+
     private static func checkPlaybackAndRestore(closing: Bool) {
         let controller = PowerTransitionController(reduceMotion: { false })
         var frames = 0
@@ -170,17 +176,22 @@ struct MenuFeedbackTests {
         controller.onFrame = { frames += 1 }
         let started = ProcessInfo.processInfo.systemUptime
         controller.showMenuClick()
-        pump(for: 0.16)
-        expect((controller.menuClickProgress ?? 0) > 0, "首个点击已经开始推进")
+        waitUntil({ frames > 1 }, timeout: 1.0)
+        expect(frames > 1 && (controller.menuClickProgress ?? 1) > 0,
+               "首个点击已经开始推进 [\(frameDiagnostic(controller, frames: frames, since: started))]")
         let beforeRepeat = controller.menuClickProgress
         let beforeFrames = frames
         for _ in 0..<20 { controller.showMenuClick() }
         expect(controller.menuClickProgress == beforeRepeat && frames == beforeFrames,
                "同方向快速点击保持进度，不重置或额外绘制")
+        let observationStarted = ProcessInfo.processInfo.systemUptime
         pump(for: 0.16)
-        expect(frames - beforeFrames > 2 && frames - beforeFrames <= 14,
-               "重复点击后仍按单个 60 Hz 计时器推进")
-        waitUntil({ controller.menuClickProgress == nil }, timeout: 0.7)
+        waitUntil({ frames > beforeFrames || controller.menuClickProgress == nil }, timeout: 0.8)
+        let observationElapsed = ProcessInfo.processInfo.systemUptime - observationStarted
+        let frameLimit = Int(ceil(observationElapsed * 60)) + 2
+        expect(frames - beforeFrames > 0 && frames - beforeFrames <= frameLimit,
+               "重复点击后仍按单个 60 Hz 计时器推进 [limit=\(frameLimit), \(frameDiagnostic(controller, frames: frames - beforeFrames, since: observationStarted))]")
+        waitUntil({ controller.menuClickProgress == nil }, timeout: 1.0)
         expect(controller.menuClickProgress == nil, "重复点击后正常结束")
         expect(ProcessInfo.processInfo.systemUptime - started < 1.15,
                "同方向点击不延长完整行程")
@@ -193,24 +204,55 @@ struct MenuFeedbackTests {
     private static func checkContinuousReversal() {
         let controller = PowerTransitionController(reduceMotion: { false })
         var frames = 0
-        controller.onFrame = { frames += 1 }
+        var phaseOrigin: CGFloat = 0
+        var target: CGFloat = 1
+        var previousProgress: CGFloat = 0
+        var phaseAdvanced = false
+        var phaseValid = true
+        // Observe every callback, including the restoring endpoint. A busy
+        // runner may deliver several frames before waitUntil regains control.
+        controller.onFrame = { [weak controller] in
+            guard let controller else { return }
+            frames += 1
+            let value = controller.menuClickProgress ?? target
+            let increasing = target > phaseOrigin
+            phaseValid = phaseValid && value >= 0 && value <= 1
+                && (increasing ? value >= previousProgress : value <= previousProgress)
+            phaseAdvanced = phaseAdvanced || (increasing ? value > phaseOrigin : value < phaseOrigin)
+            previousProgress = value
+        }
+        let started = ProcessInfo.processInfo.systemUptime
         controller.showMenuClick()
-        pump(for: 0.28)
-        let openingProgress = controller.menuClickProgress
+        waitUntil({ previousProgress >= 0.35 }, timeout: 1.0)
+        let openingProgress = controller.menuClickProgress ?? 1
+        phaseOrigin = openingProgress
+        target = 0
+        previousProgress = phaseOrigin
+        phaseAdvanced = false
+        phaseValid = true
         controller.showMenuClose()
-        expect(openingProgress != nil && controller.menuClickProgress == openingProgress,
-               "打开中途关闭从当前已绘制进度连续反转")
-        pump(for: 0.10)
-        let closingProgress = controller.menuClickProgress
-        expect(closingProgress != nil && (closingProgress ?? 1) < (openingProgress ?? 0),
-               "中途关闭后进度下降")
+        expect(openingProgress > 0 && controller.menuClickProgress == openingProgress,
+               "关闭从当前已绘制进度连续反转 [\(frameDiagnostic(controller, frames: frames, since: started))]")
+        waitUntil({ phaseAdvanced || controller.menuClickProgress == nil }, timeout: 1.0)
+        let closingProgress = controller.menuClickProgress ?? 0
+        expect(phaseAdvanced && phaseValid && closingProgress < openingProgress,
+               "关闭后回调进度单调下降 [origin=\(openingProgress), \(frameDiagnostic(controller, frames: frames, since: started))]")
+        phaseOrigin = closingProgress
+        target = 1
+        previousProgress = phaseOrigin
+        phaseAdvanced = false
+        phaseValid = true
         controller.showMenuClick()
-        expect(closingProgress != nil && controller.menuClickProgress == closingProgress,
-               "关闭中途重新打开保持进度连续")
-        pump(for: 0.08)
+        expect(controller.menuClickProgress == closingProgress,
+               "关闭后重新打开保持进度连续 [\(frameDiagnostic(controller, frames: frames, since: started))]")
+        waitUntil({ phaseAdvanced || controller.menuClickProgress == nil }, timeout: 1.0)
         let reopenedProgress = controller.menuClickProgress
-        expect(reopenedProgress != nil && (reopenedProgress ?? 0) > (closingProgress ?? 1),
-               "再次打开后进度重新上升")
+        expect(phaseAdvanced && phaseValid && (reopenedProgress ?? 1) > closingProgress,
+               "再次打开后回调进度单调上升 [origin=\(closingProgress), \(frameDiagnostic(controller, frames: frames, since: started))]")
+
+        // The following block measures callback rate, not direction: its
+        // synchronous calls intentionally alternate targets without advancing.
+        controller.onFrame = { frames += 1 }
 
         // Repeated reversals keep replacing the one timer, then finish only the
         // remaining distance at the same progress-per-second speed.
@@ -221,9 +263,13 @@ struct MenuFeedbackTests {
         expect(controller.menuClickProgress == reopenedProgress,
                "快速来回反转不跳到零或一")
         let beforeSteadyFrames = frames
+        let observationStarted = ProcessInfo.processInfo.systemUptime
         pump(for: 0.12)
-        expect(frames - beforeSteadyFrames > 2 && frames - beforeSteadyFrames <= 12,
-               "连续反转不累积并行帧计时器")
+        waitUntil({ frames > beforeSteadyFrames || controller.menuClickProgress == nil }, timeout: 0.8)
+        let observationElapsed = ProcessInfo.processInfo.systemUptime - observationStarted
+        let frameLimit = Int(ceil(observationElapsed * 60)) + 2
+        expect(frames - beforeSteadyFrames > 0 && frames - beforeSteadyFrames <= frameLimit,
+               "连续反转不累积并行帧计时器 [limit=\(frameLimit), \(frameDiagnostic(controller, frames: frames - beforeSteadyFrames, since: observationStarted))]")
         let closingOrigin = controller.menuClickProgress ?? 1
         let closeStarted = ProcessInfo.processInfo.systemUptime
         controller.showMenuClose()
