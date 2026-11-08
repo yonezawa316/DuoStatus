@@ -4,6 +4,18 @@
 
 最低运行系统为 macOS 13.0，与开发工具所在系统及 SDK 版本并不相同。Swift 并发使用系统运行库，本项目不携带额外的动态回部署库。两种架构采用统一的 13.0 下限；若调整下限，需要重新验证 API 和工具链运行库兼容性，不能只修改 Info.plist。
 
+## Installation and opening
+
+Once sales open, download the app ZIP through the purchase delivery link, unzip it, and move **DuoStatus Release.app** to **Applications**. Open the app to show its menu bar icon. The menu is currently in Chinese; **退出 DuoStatus Release** quits the app. Double-click the app to open it again.
+
+The current package is ad-hoc signed and has not been notarized by Apple. macOS may block its first launch. Verify the source and follow [Apple’s per-app opening instructions](https://support.apple.com/en-us/102445); do not disable system-wide security checks. This technical status is separate from the version number or price. See [compatibility details](compatibility.md) for the tested scope.
+
+## 安装与打开
+
+开放销售后，通过购买后的交付链接下载应用 ZIP，解压并将 **DuoStatus Release.app** 拖入“应用程序”，双击后会出现菜单栏图标。当前菜单为中文；选择“退出 DuoStatus Release”即可退出，再次使用时双击应用。
+
+当前包采用 ad-hoc 签名，尚未经过 Apple 公证，首次打开可能被 macOS 拦截。核实来源后参照[苹果的逐应用打开说明](https://support.apple.com/en-us/102445)操作，不关闭整体安全检查。此技术状态与正式版本号、售价是不同事项，实测范围见[兼容性记录](compatibility.md)。
+
 ## 日常命令
 
 在本项目根目录执行：

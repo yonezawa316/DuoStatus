@@ -6,7 +6,11 @@ A lightweight native Mac menu bar app that brings battery, Wi-Fi status, and est
 
 **macOS 13+ · Apple Silicon and Intel · Universal app**
 
-[Download the pre-release](https://github.com/yonezawa316/DuoStatus/releases) · [中文介绍](#中文介绍)
+**Version 0.5.0 · US$1.99 one-time purchase · No subscription**
+
+Sales are not open yet. The purchase link will appear here when checkout is ready.
+
+[中文介绍](#中文介绍)
 
 ## What it shows
 
@@ -19,11 +23,11 @@ The menu displays status and provides a quit action. It does not change battery 
 
 ## Install
 
-1. Download the app ZIP marked `universal` from [Releases](https://github.com/yonezawa316/DuoStatus/releases). The automatically generated `Source code` archives contain source files, not the app.
+1. Once sales open, download the Universal app ZIP using the download link provided after purchase.
 2. Unzip it, move **DuoStatus Release.app** to **Applications**, and open it.
 3. Click its menu bar icon to view status. Choose **退出 DuoStatus Release** to quit; double-click the app to open it again. The current app menu is in Chinese.
 
-The app has no main window or Dock icon and does not add a login item. The current pre-release uses **ad-hoc signing and is not notarized by Apple**. If macOS blocks it, verify the download source and follow [Apple’s instructions for opening an app](https://support.apple.com/en-us/102445).
+The app has no main window or Dock icon and does not add a login item. See the [installation guide](docs/build.md#installation-and-opening) for opening instructions. GitHub’s automatically generated “Source code” archives contain project files, not the app.
 
 ## Lightweight and private
 
@@ -31,7 +35,7 @@ Built with Swift and AppKit, using Apple frameworks and system runtimes without 
 
 No telemetry, ads, update service, network scanning, or stored history. DuoStatus does not read SSIDs, BSSIDs, or Wi-Fi passwords, and does not request location, accessibility, or administrator access. See [privacy and removal](docs/privacy.md).
 
-This is **0.5.0, a release candidate**. Both architectures build, and focused logic and package checks have passed. Older-system and Intel hardware testing and long-term resource measurements are still pending; no fixed memory footprint is promised across devices. See the [compatibility record](docs/compatibility.md).
+Technical details are available in the [compatibility record](docs/compatibility.md).
 
 ## Build and package
 
@@ -67,6 +71,10 @@ DuoStatus 是一个轻量原生 Mac 菜单栏应用，将电量、Wi-Fi 状态�
 
 **面向 macOS 13 及以上，提供 Apple 芯片与 Intel 通用安装包。**
 
+**0.5.0 正式版 · 1.99 美元一次性买断 · 无订阅**
+
+目前尚未开放销售，收款准备完成后会在此提供购买入口。
+
 ### 功能
 
 - **电量上弧：**显示剩余电量；不超过 10% 时红色，否则低电量模式下黄色，否则实际充电时绿色。
@@ -78,11 +86,11 @@ DuoStatus 是一个轻量原生 Mac 菜单栏应用，将电量、Wi-Fi 状态�
 
 ### 安装与使用
 
-1. 从 [Releases](https://github.com/yonezawa316/DuoStatus/releases) 下载标有 `universal` 的应用 ZIP，自动生成的 `Source code` 是源码包。
+1. 开放销售后，通过购买后提供的下载链接获取 Universal 应用 ZIP。
 2. 解压，把 **DuoStatus Release.app** 拖入“应用程序”，双击打开。
 3. 点击菜单栏图标查看信息，选择“退出 DuoStatus Release”结束；再次使用时双击应用。
 
-应用没有主窗口或 Dock 图标，也不会添加开机启动项。当前预发布包采用 **ad-hoc 签名，尚未经过 Apple 公证**。如果 macOS 拦截，请核实来源后参照[苹果的打开说明](https://support.apple.com/en-us/102445)。
+应用没有主窗口或 Dock 图标，也不会添加开机启动项。具体打开方法见[安装说明](docs/build.md#安装与打开)。GitHub 自动生成的“Source code”包含工程文件，不是应用安装包。
 
 ### 低占用与隐私
 
@@ -90,7 +98,7 @@ DuoStatus 是一个轻量原生 Mac 菜单栏应用，将电量、Wi-Fi 状态�
 
 无遥测、广告、更新服务、网络扫描或历史记录。不读取 SSID、BSSID 和 Wi-Fi 密码，不请求定位、辅助功能或管理员权限，详见[隐私与卸载](docs/privacy.md)。
 
-当前为 **0.5.0 发布候选版**：已完成双架构构建、逻辑回归和打包检查，尚待旧系统、Intel 实机及长期资源验证，不承诺所有设备具有相同内存占用。具体范围见[兼容性记录](docs/compatibility.md)。
+详细技术信息见[兼容性记录](docs/compatibility.md)。
 
 ### 构建与文件位置
 

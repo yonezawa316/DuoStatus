@@ -37,17 +37,9 @@ jobs:
         run: ./scripts/build.sh
       - name: Run focused tests on the native architecture
         run: ./scripts/test.sh
-      - name: Package ad-hoc preview
+      - name: Validate package
         run: ./scripts/package.sh
-      - name: Preserve download artifacts
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: DuoStatus-preview-${{ matrix.os }}
-          path: |
-            dist/*.zip
-            dist/*.sha256
-          if-no-files-found: error
-          retention-days: 14
 
 # No certificate, credential, publishing permission, or automatic Release upload.
+# Paid app packages are validated on the runner, not uploaded as public artifacts.
 # These jobs check native logic on two runners, not the macOS 13 support floor.

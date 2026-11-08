@@ -1,29 +1,44 @@
-# GitHub 发布说明
+# GitHub 发布与销售说明
 
-本仓库保存发布工程，应用安装包通过 Releases 提供。当前包按预发布版本发布，兼容性边界与签名状态必须随包说明。GitHub 上传与商业销售是不同步骤；上传项目不需要绑定收款方式。
+当前 **DuoStatus 0.5.0 为正式版，售价 US$1.99，一次性买断、无订阅**。购买入口准备中，尚未开放销售；安装包应保持 GitHub 发布草稿，等待收款与付费交付准备完成。源码仓库保持公开，源码公开不等于应用免费分发或授予开源许可。
 
-## 仓库与 Release
+GitHub 用于项目介绍、技术文档与版本记录；销售平台负责收款和购买后的文件交付。上传 GitHub 本身不需要绑定收款方式。产品介绍使用英语在前、中文随后，安装与兼容性细节通过技术文档提供。
 
-1. 发布沿用 [LICENSE.md](../LICENSE.md) 中的许可状态。当前保留权利，上传到 GitHub 不要求改用 MIT 或其他开源许可证。
-2. 将本工程连接到维护者指定的 GitHub 仓库并推送 `main`。只上传已经审查的源码、资源和文档，排除 `docs/local/`、构建缓存及其他应用。首次推送前检查提交作者采用公开身份及 GitHub 隐藏邮箱，以及暂存和历史内容不含凭据。
-3. GitHub Actions 配置会构建两种架构，在 Apple Silicon 与 Intel runner 分别运行逻辑测试，再保留安装包 artifact。工作流仅有读取权限，不会创建公开 Release；尚未在远端运行时不要标记 CI 已通过。
-4. 创建一个 **draft / pre-release**，选择实际提交并使用 `v0.5.0-rc.1` 等候选标签。附上本次导出目录中的 Universal ZIP 和对应 `.sha256`，填写下面的说明模板，检查后再发布。默认导出目录为 `dist/`；本地也可在项目根目录执行 `./scripts/package.sh --output-dir ..`，把附件放到工程的上一级目录。CI 继续从默认 `dist/` 收集附件。
+## 仓库与安装包
 
-GitHub 自动提供的 `Source code.zip` 不是应用安装包；Releases 中必须另外上传构建得到的 ZIP。不要把 `.app`、构建缓存或公证凭据提交到源码仓库。
+1. 发布沿用 [LICENSE.md](../LICENSE.md) 中的许可状态。当前保留权利，不自行改用 MIT 或其他开源许可证。实际开售前需准备购买入口与对应使用条款；本次定价不承诺永久免费升级。
+2. 公开 `main` 仅包含已经审查的源码、资源和文档，排除 `docs/local/`、构建缓存及其他应用。提交作者采用公开身份及 GitHub 隐藏邮箱，检查历史内容不含凭据。
+3. GitHub Actions 在 Apple Silicon 与 Intel runner 分别构建、运行原生逻辑测试并打包。工作流仅有读取权限，不会自动创建公开 Release。提交 `6641a00` 的[两组检查已通过](https://github.com/yonezawa316/DuoStatus/actions/runs/42484134549)。
+4. 收款准备完成前，将当前 Release 保持为 **draft**，保留已核对的 Universal ZIP 与 `.sha256` 附件供发布准备。未经维护者新的指令，不重新公开免费安装包。正式版面向用户的名称为 **DuoStatus 0.5.0**，是否准备好销售与 GitHub 草稿状态分开记录。
+5. 销售平台准备好后，将同一份已核对的 ZIP 作为付费交付文件，并在产品页放入真实购买链接。不要用公开 GitHub 附件链接作为付费下载限制。
 
-应用内置浅色图标会随 ZIP 内的 `.app` 提供。为本地 ZIP 设置的 Finder 外观图标可能在上传或下载时丢失，因为它依赖文件元数据；这不影响解压后的应用图标。
+默认导出目录为 `dist/`；本地也可执行 `./scripts/package.sh --output-dir ..`，把 ZIP 和校验文件放到工程上一级目录。CI 在 runner 内完成打包验证，不上传可公开下载的应用 artifact；付费安装包通过选定销售平台交付。
 
-## 可复制的候选版说明
+GitHub 自动生成的 `Source code.zip` 是工程文件，不是应用安装包。不要把 `.app`、构建缓存或公证凭据提交到源码仓库。
 
-> DuoStatus 0.5.0 发布候选版。支持目标为 macOS 13.0 及以上、Apple Silicon 与 Intel，下载带 `universal` 的应用 ZIP。
+应用内置浅色图标随 ZIP 内的 `.app` 提供。为本地 ZIP 设置的 Finder 图标可能在上传或下载时丢失，因为它依赖文件元数据；这不影响解压后的应用图标。
+
+## Product description
+
+> **DuoStatus 0.5.0 — US$1.99, one-time purchase. No subscription.**
 >
-> 解压后把 DuoStatus Release.app 拖到“应用程序”并打开；菜单栏中点击查看电量、Wi-Fi 和内存估算。无自动启动项，不需要定位或管理员权限。
+> Battery, Wi-Fi status, and estimated memory usage in one compact Mac menu bar icon. Native Swift/AppKit design, live menu information, and short, smooth animations.
 >
-> 当前包使用 ad-hoc 本地签名，未经 Apple 公证，首次打开可能被 Gatekeeper 拦截。仅在确认来源及完整性后，按苹果指引逐应用允许打开，不要关闭整体安全检查。
+> For macOS 13 and later, with one Universal app for Apple Silicon and Intel. Sales are not open yet; the purchase link is coming soon.
 >
-> 双架构构建与逻辑检查不等于所有旧系统实机测试。内存为公开 VM 统计估算，不保证与活动监视器完全一致，也未承诺所有机器相同的资源占用。具体记录见仓库兼容性文档。
+> [Installation guide](build.md#installation-and-opening) · [Technical details](compatibility.md)
 
-安装包的使用和再分发范围以具体 Release 的说明为准；公开提供下载不等于授予开源许可。收费与支付交付另行安排，不应在上传源码时索取收款账号或银行卡信息。
+## 中文产品介绍
+
+> **DuoStatus 0.5.0 — 1.99 美元一次性买断，无订阅。**
+>
+> 将电量、Wi-Fi 状态和内存占比估算整合在一枚紧凑的 Mac 菜单栏图标中。采用原生 Swift/AppKit，提供实时菜单信息与简短流畅的动画。
+>
+> 面向 macOS 13 及以上，提供 Apple 芯片与 Intel 通用应用。目前尚未开放销售，购买入口即将提供。
+>
+> [安装说明](build.md#安装与打开) · [技术信息](compatibility.md)
+
+安装包的使用和分发范围由作者随销售条款另行说明；当前定价不代替完整的商业使用条款。支付账号、银行卡与身份资料只在选定销售平台的正式页面中填写，不放入 GitHub 或聊天记录。
 
 ## 正式签名与公证
 
@@ -36,7 +51,7 @@ NOTARY_PROFILE='YOUR_EXISTING_KEYCHAIN_PROFILE' ./scripts/notarize.sh
 
 上述值是占位符，必须替换为自己已有的身份与钥匙串条目。第二条命令会把签名包提交给 Apple，只在维护者安排公证时执行。成功后脚本装订公证票据、核验 Gatekeeper，再生成标有 `notarized` 的新 ZIP 与校验值。不要在公证后修改应用资源或重新签名，也不要继续发送公证前的旧 ZIP。
 
-没有账号和证书时，仍可以在 GitHub 提供注明状态的预发布包，但不能宣称“已公证”或保证所有用户双击即开。商业收费页面与支付交付另外准备，GitHub Releases 自身不是付费下载门槛。
+版本号和售价不改变签名状态，不能宣称“已公证”或保证所有用户双击即开。安装说明与兼容记录应与实际交付包一致。GitHub Releases 自身不是付费下载门槛，当前商业交付安排见上文。
 
 ## 参考
 
