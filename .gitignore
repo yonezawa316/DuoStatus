@@ -1,0 +1,23 @@
+# macOS Finder metadata
+.DS_Store
+
+# Project build output, caches and exported apps
+/build/
+/dist/
+/.build/
+
+# Local measurements and machine-specific notes
+/docs/local/
+
+# Xcode user state; keep shared project/workspace configuration
+xcuserdata/
+*.xcuserstate
+
+# Private signing material
+*.p12
+*.pfx
+*.mobileprovision
+*.provisionprofile
+*.p8
+.env
+.env.*

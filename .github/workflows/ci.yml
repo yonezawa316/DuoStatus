@@ -1,0 +1,47 @@
+name: Build and check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  universal:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, macos-15-intel]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Show existing toolchain
+        run: xcrun swiftc --version
+      - name: Build both architectures
+        run: ./scripts/build.sh
+      - name: Run focused tests on the native architecture
+        run: ./scripts/test.sh
+      - name: Package ad-hoc preview
+        run: ./scripts/package.sh
+      - name: Preserve download artifacts
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: DuoStatus-preview-${{ matrix.os }}
+          path: |
+            dist/*.zip
+            dist/*.sha256
+          if-no-files-found: error
+          retention-days: 14
+
+# No certificate, credential, publishing permission, or automatic Release upload.
+# These jobs check native logic on two runners, not the macOS 13 support floor.

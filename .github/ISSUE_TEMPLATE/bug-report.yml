@@ -1,0 +1,35 @@
+name: 问题反馈 / Bug report
+description: 报告状态显示、兼容性或资源占用问题。
+title: "[Bug] "
+body:
+  - type: input
+    id: version
+    attributes:
+      label: DuoStatus 版本
+      placeholder: "例如 0.5.0，GitHub 下载包或自行构建"
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: macOS 版本与芯片
+      placeholder: "例如 macOS 13.7 / Intel，或 macOS 15 / Apple M1"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: 出现了什么问题？
+      description: 写明操作、预期结果和实际结果；请遮盖截图中的网络名称及个人信息。
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 如何重现？
+      description: 电池供电或接电、Wi-Fi 状态、菜单是否展开、是否启用减少动态效果。
+  - type: textarea
+    id: resources
+    attributes:
+      label: 如涉及内存或 CPU
+      description: 请记录进程名、启动或交互后经过多久、数值和单位。菜单里的内存是全机估算，不是应用自身占用。
